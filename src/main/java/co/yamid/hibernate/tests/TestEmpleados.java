@@ -1,39 +1,46 @@
 package co.yamid.hibernate.tests;
 
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import co.yamid.hibernate.modelo.Direccion;
 import co.yamid.hibernate.modelo.Empleado;
 
 public class TestEmpleados {
 	
-	private static EntityManager manager;
-	
-	private static EntityManagerFactory emf;
+	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("aplicacion");
 	
 	
-	public static void main(String[] args) {
-		/*Crear el gestor de persistencia*/
-		emf = Persistence.createEntityManagerFactory("aplicacion");
-		manager = emf.createEntityManager();
+	public static void main(String[] args) {		
+		EntityManager man  = emf.createEntityManager();
+		Direccion d = new Direccion(15L, "Calle Falsa, 123", "Springfield", "Springfield", "EUU" );
+		Empleado e  = new Empleado(10L, "Perez", "Pepito", LocalDate.of(1989, 6, 1));
+		e.setDireccion(d);
+		man.getTransaction().begin();
+		man.persist(d);
+		man.persist(e);
+		man.getTransaction().commit();
 		
-		Empleado e  = new Empleado(10L, "P¨¦rez", "Pepito", new GregorianCalendar(1989,1,1).getTime());
-		Empleado e2  = new Empleado(20L, "P¨¦rez", "Pepito", new GregorianCalendar(1989,1,1).getTime());
-		manager.getTransaction().begin();
-		manager.persist(e);
-		manager.persist(e2);
-		manager.getTransaction().commit();
+		imprimirTodo();
+		
+		man = emf.createEntityManager();
+		man.getTransaction().begin();
+		e.setNombre("yamid");
+		man.merge(e);
+		man.getTransaction().commit();
+		man.close();
 		
 		imprimirTodo();
 	}
-	
-	@SuppressWarnings({ "unchecked"})
+
 	private static void imprimirTodo() {
-		List<Empleado> emps = (List<Empleado>) manager.createQuery("FROM Empleado").getResultList();
+		EntityManager man  = emf.createEntityManager();
+		@SuppressWarnings("unchecked")
+		List<Empleado> emps = (List<Empleado>) man.createQuery("FROM Empleado").getResultList();
 		System.out.println("En esta bd hay "+ emps.size() +" empleados");
 		for	(Empleado emp: emps) {
 			System.out.println(emp.toString());

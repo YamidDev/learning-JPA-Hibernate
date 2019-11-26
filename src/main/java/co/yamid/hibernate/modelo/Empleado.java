@@ -1,11 +1,13 @@
 package co.yamid.hibernate.modelo;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -25,17 +27,29 @@ public class Empleado implements Serializable {
 	private String nombre;
 	
 	@Column(name ="FECHA_NAC")
-	private Date fechaNacimiento;
-	
+	private LocalDate fechaNacimiento;
+
+	@OneToOne
+	@JoinColumn(name = "ID_DIRECCION")
+	private Direccion direccion;
+
 	public Empleado() {
-		
+
 	}
-	
-	public Empleado(Long codigo, String apellidos, String nombre, Date fechaNacimiento) {
+
+	public Empleado(Long codigo, String apellidos, String nombre, LocalDate fechaNacimiento) {
 		super();
 		this.codigo = codigo;
 		this.apellidos = apellidos;
 		this.nombre = nombre;
+		this.fechaNacimiento = fechaNacimiento;
+	}
+	
+	public LocalDate getFechaNacimiento() {
+		return fechaNacimiento;
+	}
+
+	public void setFechaNacimiento(LocalDate fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
@@ -63,22 +77,20 @@ public class Empleado implements Serializable {
 		this.nombre = nombre;
 	}
 
-	public Date getFechaNacimiento() {
-		return fechaNacimiento;
+	public Direccion getDireccion() {
+		return direccion;
 	}
 
-	public void setFechaNacimiento(Date fechaNacimiento) {
-		this.fechaNacimiento = fechaNacimiento;
+	public void setDireccion(Direccion direccion) {
+		this.direccion = direccion;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Empleado [codigo=").append(codigo).append(", apellidos=").append(apellidos).append(", nombre=")
-				.append(nombre).append(", fechaNacimiento=").append(fechaNacimiento).append("]");
+				.append(nombre).append(", fechaNacimiento=").append(fechaNacimiento).append(", direccion=")
+				.append(direccion).append("]");
 		return builder.toString();
 	}
-	
-	
-	
 }
